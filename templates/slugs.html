@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{%static 'css/style.css'%}">
+  <title>Document</title>
+</head>
+<body>
+{% block content %}
+
+{% if user.is_authenticated %}
+<nav>
+    <a href="/">Home</a>
+    <a href="{% url "viewpostpage" %}">Groups</a>
+    <a href="{% url "createroom" %}">Addgroup</a>
+    <form action="{% url "logout_page" %}" method="post">
+        {% csrf_token %}
+        <button type="submit" id="logout-button">Logout</button>
+    </form>
+
+</nav>
+{% else %}
+
+<nav>
+    <a href="/">Home</a>
+    <a href="signup">Sign-Up</a>
+    <a href="signin">Sign-In</a>
+    
+</nav>
+ {% endif %}
+{% if user.is_authenticated %}
+  <div class="container">
+    <div class="row d-flex justify-content-center">
+        <div class="col-12">
+            <div class="alert alert-info d-flex justify-content-between" role="alert">
+              <h1>ROOM Name : {{room}}  </h1>
+             
+            </div>
+            <br><br><br><br><br><br><br>
+            <form>
+                <div class="form-group">
+                  {% if messages %}
+                  <div class="jumbotron" id="chatbox" style="padding: 4px 2px;max-height: 300px;  /* Adjust the max-height as needed */
+                  overflow-y: scroll;">
+                      {% for message in messages %}
+                        <div class="chat-message {% if message.user == request.user %}text-right{% else %}text-left{% endif %}">
+                          <b>{{ message.Author }}</b> : {{ message.content }}<br>
+                        </div>
+                        {% endfor %}
+                  </div>
+                  {% else %}
+                  <div class="jumbotron" id="chatbox" style="padding: 4px 2px;"></div>
+                  <b></b>
+                    {% endif %}
+
+                </div>
+                <br/>
+                <div class="form-group" style="width: 100%;">
+                    <input class="form-control" placeholder="Enter text here" id="my_input" type="text" required></br>
+                </div>
+                <br/>
+                <input class="btn btn-primary btn-lg btn-block" id="submit_button" type="button" value="Send">
+            </form>
+
+            {% if request.user.is_superuser %}
+    <form method="POST" action="{% url 'delete_room' room.id %}">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+    </form>
+          {% endif %}
+
+        </div>
+    </div>
+</div>
+{{slug|json_script:"room_slug"}}
+<script>
+const chatbox = document.querySelector("#chatbox");
+  function scrollToBottom() {
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
+  scrollToBottom();
+    const roomName= JSON.parse(document.getElementById('room_slug').textContent);
+    const chatSocket = new WebSocket("ws://" + window.location.host + "/ws/chat/"+ roomName +"/");
+    chatSocket.onopen = function (e) {
+      console.log("The connection was setup successfully !");
+    };
+    chatSocket.onclose = function (e) {
+      console.log("Something unexpected happened !");
+    };
+    document.querySelector("#my_input").focus();
+    document.querySelector("#my_input").onkeyup = function (e) {
+      if (e.keyCode == 13) {
+        e.preventDefault();
+        document.querySelector("#submit_button").click();
+      }
+    };
+    document.querySelector("#submit_button").onclick = function (e) {
+      var messageInput = document.querySelector(
+        "#my_input"
+      ).value;
+      if(messageInput.length == 0)
+        {
+            alert("Add some Input First Or Press Send Button!")
+        }
+        else
+        {
+          chatSocket.send(JSON.stringify({ message: messageInput, username : "{{request.user.username}}",room_name:"{{room_name}}",room_name:roomName}));
+        }
+    };
+    chatSocket.onmessage = function (e) {
+      const data = JSON.parse(e.data);
+      var div = document.createElement("div");
+      div.innerHTML = "<b>" + data.username + "</b> : " + data.message;
+
+      // Add class based on user authentication
+      if (data.username === "{{ request.user.username }}") {
+        div.classList.add("chat-message", "text-right");
+      } else {
+        div.classList.add("chat-message", "text-left");
+      }
+
+      document.querySelector("#my_input").value = "";
+      document.querySelector("#chatbox").appendChild(div);
+      scrollToBottom();
+    };
+  </script>
+{% else %}
+<div class="container">
+    <div class="alert alert-info d-flex justify-content-between" role="alert">
+        <h5>You are not logged in</h5>
+        <a href="/accounts/logout/">
+          <button type="button" class="btn btn-light"><a href="{% url 'login' %}">Log In</a></button>
+        </a>
+      </div>
+</div>  
+{% endif %}
+
+{% endblock %}
+
+
+<footer style="
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #f8f9fa;
+    color: black;
+    text-align: center;
+    padding: 10px 0;">
+        <a href="https://www.linkedin.com/in/ragul-k-aa650a28a/" target="_blank">LinkedIn</a>
+        <p>© 2024 HowsApp. All rights reserved. This website is owned by Ragul.</p>
+    </footer>
+</body>
+</html>

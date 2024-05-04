@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+{%load static%}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{%static 'css/style.css'%}">
+    <title>
+        {% block title %} ShareSquare Signup{% endblock title %}
+    </title>
+    <script src="{% static 'meta.json' %}"></script>
+
+</head>
+<body>
+
+    {% if user.is_authenticated %}
+    <nav>
+        <a href="/">Home</a>
+        <a href='viewpostpage'>Posts</a>
+        <a href="addgroup">Addpost</a>
+        <form action="{% url "logout_page" %}" method="post">
+            {% csrf_token %}
+            <button type="submit" id="logout-button">Logout</button>
+        </form>
+
+    </nav>
+    {% else %}
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="signup">Sign-Up</a>
+        <a href="signin">Sign-In</a>
+        
+    </nav>
+    {% endif %}
+
+    {% block content %}
+
+    <form action="signup" method = 'post'>
+    {% csrf_token %}
+    {{form}}
+    <button>Register</button>
+    
+    </form>
+    
+    {% endblock content %}
+    
+    <footer style="
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #f8f9fa;
+    color: black;
+    text-align: center;
+    padding: 10px 0;">
+        <a href="https://www.linkedin.com/in/ragul-k-aa650a28a/" target="_blank">LinkedIn</a>
+        <p>© 2024 HowsApp. All rights reserved. This website is owned by Ragul.</p>
+    </footer>
+</body>
+</html>

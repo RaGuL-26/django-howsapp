@@ -1,0 +1,27 @@
+<form action="{% url 'createroom' %}" method='post' style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); border-radius: 10px; background-color: #f0f0f0;">
+    {% csrf_token %}
+    <div style="display: flex; justify-content: space-between; width: 100%;">
+        <div style="flex: 1; margin-right: 10px;">
+            <label for="{{ form.name_of_room.id_for_label }}">Name of Room:</label>
+            {{ form.name_of_room }}
+        </div>
+        <div style="flex: 1; margin-left: 10px;">
+            <label for="{{ form.slug.id_for_label }}">Slug:</label>
+            {{ form.slug }}
+        </div>
+    </div>
+    <button style="padding: 10px 30px; border: none; border-radius: 5px; background-color: #008CBA; color: white; cursor: pointer; transition: background-color 0.3s ease; margin-top: 20px;">Create</button>
+    <a href="{% url "viewpostpage" %}">BackPage</a>
+</form>
+<footer style="
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #f8f9fa;
+    color: black;
+    text-align: center;
+    padding: 10px 0;">
+        <a href="https://www.linkedin.com/in/ragul-k-aa650a28a/" target="_blank">LinkedIn</a>
+        <p>© 2024 HowsApp. All rights reserved. This website is owned by Ragul.</p>
+    </footer>

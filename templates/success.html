@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+{%load static%}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{%static 'css/style.css'%}">
+    <title>
+        {% block title %} ShareSquare Posts {% endblock title %}
+    </title>
+    <script src="{% static 'meta.json' %}"></script>
+
+</head>
+<body>
+    {% if user.is_authenticated %}
+    <nav>
+        <a href="/">Home</a>
+        <a href='viewpostpage'>Groups</a>
+        <a href="addgroup">AddGroup</a>
+        <form action="{% url "logout_page" %}" method="post">
+            {% csrf_token %}
+            <button type="submit" id="logout-button">Logout</button>
+        </form>
+
+    </nav>
+    {% else %}
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="signup">Sign-Up</a>
+        <a href="signin">Sign-In</a>
+        </nav>
+    <p>Kindly Login/Signup</p>
+    {% endif %}
+{% block content %} 
+{% if user.is_authenticated %}
+
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% for post in rooms_list %}
+    <div style="border: 1px solid #ccc; margin: 10px auto; padding: 20px; border-radius: 5px; background-color: #f9f9f9; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; width: 50%;">
+        <a href="{% url 'using_slug' post.slug %}" style="text-decoration: none; color: #333; font-size: 20px; font-weight: bold;">
+            {{post.name_of_room}}
+        </a>
+    </div>
+{% endfor %}
+
+
+
+{% endif %}
+
+{% endblock content %}
+
+<footer style="
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #f8f9fa;
+    color: black;
+    text-align: center;
+    padding: 10px 0;">
+        <a href="https://www.linkedin.com/in/ragul-k-aa650a28a/" target="_blank">LinkedIn</a>
+        <p>© 2024 HowsApp. All rights reserved. This website is owned by Ragul.</p>
+    </footer>
+   
+</body>
+</html>
+
+
